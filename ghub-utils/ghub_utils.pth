@@ -1,0 +1,5 @@
+# The full path will be similar to this:
+#   /home/ruskirin/miniconda3/envs/cluster/lib/python3.7/site-packages
+
+# Add below your path/to/my/project/ghub-utils
+/home/rimov/Documents/Projects/ghub/cluster/initmip-cluster/ghub-utils
