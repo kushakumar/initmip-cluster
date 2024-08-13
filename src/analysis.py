@@ -71,9 +71,7 @@ def test_valid_data(models, fields, variables):
     invalid = defaultdict(list) # MINE
 
     for field in fields:
-        #print(f"Checking field: {field}")
         for m in models:
-            #print(f"Checking model: {m}")
             if field in variables and m in variables[field]:
                 uniq = np.unique(variables[field][m])
                 num_uniq = len(uniq)
@@ -82,25 +80,12 @@ def test_valid_data(models, fields, variables):
                     invalid[field].append((m, ValueError))
             else:
                 continue
-                #print(f"KeyError: '{m}' not found in variables[{field}]")
-                #raise KeyError(f"'{m}' not found in variables[{field}]")
-    
-    '''for field in fields:
-        for m in models:
-            print('field is:', field)
-            print('model is:', m)
-            uniq = np.unique(variables[field][m])
-            num_uniq = len(uniq)
-            if num_uniq <= 2:
-                # data is invalid and only has nans and/or mask values
-                invalid[field].append((m, ValueError))'''
-
+   
     return invalid
 
 
 def mask_invalid(xraw, yraw, models, variables, fields: list):
     mask2d = np.full(xraw.shape, False)
-    print('mask2d is:', mask2d)
 
     for model in models:
         # Me: masking points that are nan, or missing (filler values), then
@@ -108,13 +93,9 @@ def mask_invalid(xraw, yraw, models, variables, fields: list):
         # Ryan: masked points should be True due to some nan's, can't assume
         #   all fields have the same mask
         for i, field in enumerate(fields):
-            print('field is:', field)
-            print('model is:', model)
             if model in variables[field]:
                 mask_nan = np.isnan(variables[fields[i]][model])
-                print('mask_nan is:',mask_nan)
                 mask_missing = variables[fields[i]][model] > 9e36
-                print('mask_missing is:', mask_missing)
                 mask2d = mask2d | mask_nan | mask_missing
         # for i in range(0, len(fields)):
         #     mask_nan = np.isnan(variables[fields[i]][model])

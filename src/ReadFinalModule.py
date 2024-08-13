@@ -37,10 +37,8 @@ def ReadFinal(field: str, paths: List[Path], step):
         
 
         path_abs = gfiles.DIR_PROJECT / path
-        print(f"Reading file: {path_abs} for field: {field}, model: {model}, experiment: {experiment}")
         try:
             U = Dataset(path_abs)
-            print('variables of the above dataset is:', U.variables)
             u = U.variables[field][:]
             
             if i == 0:
@@ -51,15 +49,7 @@ def ReadFinal(field: str, paths: List[Path], step):
             
             if experiment != 'init' and u.ndim == 3:
                 if step > u.shape[0]:
-                    #raise IndexError(f"Step {step} is out of bounds for axis 0 with size {u.shape[0]}")
                     step=u.shape[0]
-                    #print('step is:', step)
-                    #print(f"Skipping model {model} for field {field} due to insufficient time steps.")
-                    #continue
-                #else:
-                    #print('123456789')
-                    #u = u[step - 1, :, :]
-                    #print('0987654321')
                 u = u[step - 1, :, :]
             elif u.ndim == 2:
                 u = u[:, :]
@@ -68,8 +58,6 @@ def ReadFinal(field: str, paths: List[Path], step):
                 outfield[model] = np.squeeze(u, axis=0)
             else:
                 outfield[model] = u
-
-            #print(f"Successfully read data for model: {model}, field: {field}")
 
         except Exception as e:
             print(f"Failed to read data for model: {model}, field: {field}, experiment: {exp}, error: {e}")
@@ -140,10 +128,6 @@ def read_data(paths: List[Path]):
 
     params = mfiles.union_netcdf_params(paths)
     eof_fields = analysis.group_fields(params.fields)
-    #print('eof_fields is:', eof_fields)
-    #print(f"Params fields: {params.fields}")
-    #print(f"Params models: {params.models}")
-    #print(f"Paths: {paths}")
     
 
     for field in params.fields:
@@ -151,11 +135,9 @@ def read_data(paths: List[Path]):
         paths_field = mfiles.filter_paths_terms(
             paths, [field, ], mfiles.FileParams.FIELD
         )
-        print(f"Paths for field {field}: {paths_field}")
+        #print(f"Paths for field {field}: {paths_field}")
         try:
             X, Y, variables[field] = ReadFinal(field, paths_field, step=21)
-            #print(f"Loaded data for field: {field}")
-            print(f"Variables[{field}]: {variables[field].keys()}")
 
         except Exception as e:
             # other exception cases
@@ -165,10 +147,6 @@ def read_data(paths: List[Path]):
     # miss_data = analysis.test_valid_data(
     #     params.models, eof_fields, variables
     # )
-    #print(f"Loaded data: {variables.keys()}")
-    #print(f"Models: {params.models}")
-    #print(f"Fields: {params.fields}")
-    print(f"Variables: {variables.keys()}")
     
     miss_data = analysis.test_valid_data(
         params.models, params.fields, variables

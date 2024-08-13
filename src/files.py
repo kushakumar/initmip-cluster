@@ -51,8 +51,6 @@ def netcdf_file_params(path: Path) -> namedtuple:
     """Get field, model, and experiment from .nc filename"""
     #print('path in netcdf_file_params:', path)
     pat_file_params = r'(?P<field>\w+)_\w+_(?P<model>\w+_\w+)_(?P<exp>\w+).nc'
-    #pat_file_params = r'(?P<field>\w+)_GIS_(?P<model>\w+_\w+)_(?P<exp>\w+).nc'
-    #print('path.name is:', path.name)
     Params = namedtuple('Params', 'field model exp')
 
     mat = re.search(pat_file_params, path.name)
@@ -66,7 +64,6 @@ def netcdf_file_params(path: Path) -> namedtuple:
         # Build the new pattern for 'model'
         model_pattern = '_'.join([r'\w+'] * model_word_count)
         pat_file_params = rf'(?P<field>\w+)_\w+_(?P<model>{model_pattern})_(?P<exp>\w+).nc'
-        print('Adjusted pattern:', pat_file_params)
         
         # Re-match with the updated pattern
         mat = re.search(pat_file_params, path.name)
@@ -144,15 +141,12 @@ def union_netcdf_params(paths: List[Path]) -> namedtuple:
             continue
 
         params = netcdf_file_params(p)
-        #print('params for %s is:%s' %(p,params(models, exps, fields)))
-        print('params for %s is: %s' %(p,params))
         if params is not None:
             models.add(params.model)
             exps.add(params.exp)
             fields.add(params.field)
 
     Params = namedtuple('Params', 'models exps fields')
-    print('Overall Params is:',Params(models, exps, fields))
     return Params(models, exps, fields)
 
 
